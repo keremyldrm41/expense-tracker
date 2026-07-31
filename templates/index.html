@@ -10,7 +10,7 @@
         table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
         th { background-color: #f4f4f6; color: #555; }
-        .empty-msg { color: #888; italic; }
+        .empty-msg { color: #888; font-style: italic; }
     </style>
 </head>
 <body>
@@ -33,7 +33,7 @@
                     <td>{{ expense['description'] }}</td>
                     <td>{{ expense['category'] }}</td>
                     <!-- Converting cents to euros directly inside the template block -->
-                    <td>€{{ "%.2f"|format(expense['amount_cents'] / 100) }}</td>
+                    <td>{{ expense['amount_cents']|euros }}</td>
                 </tr>
             {% else %}
                 <tr>
