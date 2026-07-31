@@ -12,7 +12,7 @@ def get_db_connection():
 
 
 @app.route("/")
-def hello_expense():
+def index():
     conn = get_db_connection()
     # Fetch all expense rows from the database
     expenses = conn.execute(
@@ -28,6 +28,9 @@ def hello_expense():
 def about_expense():
     return "About expense-tracker!"
 
+@app.template_filter('euros')
+def cents_to_euros(cents):
+    return f"€{cents / 100:.2f}"
 
 if __name__ == "__main__":
     app.run(debug=True)
