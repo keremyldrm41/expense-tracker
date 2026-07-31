@@ -1,10 +1,33 @@
-from flask import Flask
+import sqlite3
+from flask import Flask, render_template
 
 app = Flask(__name__)
-@app.route('/')
-def hello_expense():
-    return 'Hello expense-tracker!'
 
-@app.route('/about')
+
+def get_db_connection():
+    conn = sqlite3.connect("expense.db")
+    # Setting row_factory lets us access columns by name (e.g., row['category'])
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+@app.route("/")
+def hello_expense():
+    conn = get_db_connection()
+    # Fetch all expense rows from the database
+    expenses = conn.execute(
+        "SELECT id, amount_cents, date, description, category FROM expenses"
+    ).fetchall()
+    conn.close()
+
+    # Pass the database rows to the HTML template as a keyword argument
+    return render_template("index.html", expenses=expenses)
+
+
+@app.route("/about")
 def about_expense():
-    return 'About expense-tracker!'
+    return "About expense-tracker!"
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
