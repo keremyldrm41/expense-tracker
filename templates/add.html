@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expense</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 40px; background-color: #f9f9f9; }
+        .form-card { max-width: 400px; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; }
+        input, select { width: 100%; padding: 8px 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        button { background-color: #0066cc; color: white; border: none; padding: 10px 16px; border-radius: 4px; font-cursor: pointer; font-size: 14px; width: 100%; }
+        button:hover { background-color: #0052a3; }
+        a { text-display: inline-block; margin-top: 12px; color: #666; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h1>Add New Expense</h1>
+
+        <form action="/add" method="POST">
+            <!-- 1. Amount Input -->
+            <div class="form-group">
+                <label for="amount">Amount (€):</label>
+                <!-- type="number" gives us a clean number input with decimal support -->
+                <input type="number" id="amount" name="amount" step="0.01" placeholder="e.g. 4.20">
+            </div>
+
+            <!-- 2. Date Input -->
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <!-- type="date" gives us a native calendar date picker -->
+                <input type="date" id="date" name="date">
+            </div>
+
+            <!-- 3. Description Input -->
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description" placeholder="e.g. Morning Coffee">
+            </div>
+
+            <!-- 4. Category Dropdown -->
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" name="category">
+                    <option value="Food">Food</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Sports">Sports</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <button type="submit">Save Expense</button>
+        </form>
+
+        <a href="/">← Back to Expenses</a>
+    </div>
+
+</body>
+</html>
