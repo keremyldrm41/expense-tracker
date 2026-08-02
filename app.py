@@ -15,7 +15,11 @@ def get_db_connection():
 def index():
     conn = get_db_connection()
     expenses = conn.execute(
-        "SELECT id, amount_cents, date, description, category FROM expenses"
+        """
+        SELECT id, amount_cents, date, description, category 
+        FROM expenses 
+        ORDER BY date DESC, id DESC
+        """
     ).fetchall()
     conn.close()
     return render_template("index.html", expenses=expenses)
