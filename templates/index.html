@@ -11,13 +11,15 @@
         th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
         th { background-color: #f4f4f6; color: #555; }
         .empty-msg { color: #888; font-style: italic; }
+        .edit-link { color: #0066cc; text-decoration: none; font-weight: 500; }
+        .edit-link:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
         <h1>Expenses</h1>
-        <a href="/add" style="background: #0066cc; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none;">+ Add Expense</a>
+        <a href="{{ url_for('add_expense') }}" style="background: #0066cc; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none;">+ Add Expense</a>
     </div>
     <table>
         <thead>
@@ -26,6 +28,7 @@
                 <th>Description</th>
                 <th>Category</th>
                 <th>Amount</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -34,12 +37,14 @@
                     <td>{{ expense['date'] }}</td>
                     <td>{{ expense['description'] }}</td>
                     <td>{{ expense['category'] }}</td>
-                    <!-- Converting cents to euros directly inside the template block -->
                     <td>{{ expense['amount_cents']|euros }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_expense', id=expense['id']) }}" class="edit-link">Edit</a>
+                    </td>
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="4" class="empty-msg">No expenses recorded yet.</td>
+                    <td colspan="5" class="empty-msg">No expenses recorded yet.</td>
                 </tr>
             {% endfor %}
         </tbody>
