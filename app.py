@@ -60,6 +60,43 @@ def add_expense():
 def about_expense():
     return "About expense-tracker!"
 
+@app.route("/edit/<int:id>", methods=["GET", "POST"])
+def edit_expense(id):
+    conn = get_db_connection()
+
+    if request.method == "POST":
+        # 1. Extract updated values from form
+        amount_raw = request.form["amount"]
+        date = request.form["date"]
+        description = request.form["description"]
+        category = request.form["category"]
+
+        # 2. Convert raw Euro string (e.g., "4.20") back to integer cents (420)
+        amount_cents = round(float(amount_raw) * 100)
+
+        # 3. Update database row
+        conn.execute(
+            """
+            UPDATE expenses
+            SET amount_cents = ?, date = ?, description = ?, category = ?
+            WHERE id = ?
+            """,
+            (amount_cents, date, description, category, id),
+        )
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("index"))
+
+    # GET request: fetch existing record to populate the form
+    expense = conn.execute(
+        "SELECT id, amount_cents, date, description, category FROM expenses WHERE id = ?",
+        (id,),
+    ).fetchone()
+
+    conn.close()
+
+    return render_template("edit.html", expense=expense)
 
 @app.template_filter("euros")
 def cents_to_euros(cents):
