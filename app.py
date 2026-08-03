@@ -98,6 +98,16 @@ def edit_expense(id):
 
     return render_template("edit.html", expense=expense)
 
+@app.route("/delete/<int:id>", methods=["POST"])
+def delete_expense(id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM expenses WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("index"))
+
+
 @app.template_filter("euros")
 def cents_to_euros(cents):
     return f"€{cents / 100:.2f}"
