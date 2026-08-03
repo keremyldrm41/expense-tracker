@@ -57,28 +57,39 @@ def about_expense():
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_expense(id):
     conn = get_db_connection()
-    expense = conn.execute('SELECT * FROM expenses WHERE id = ?', (id,)).fetchone()
+    expense = conn.execute(
+        'SELECT * FROM expenses WHERE id = ?', (id,)
+    ).fetchone()
 
     if expense is None:
         conn.close()
         abort(404)
 
     if request.method == 'POST':
-        title = request.form['title']
-        amount = request.form['amount']
-        category = request.form['category']
+        amount_raw = request.form['amount']
         date = request.form['date']
+        description = request.form['description']
+        category = request.form['category']
+
+        amount_cents = round(float(amount_raw) * 100)
 
         conn.execute(
-            'UPDATE expenses SET title = ?, amount = ?, category = ?, date = ? WHERE id = ?',
-            (title, amount, category, date, id)
+            '''
+            UPDATE expenses
+            SET amount_cents = ?, date = ?, description = ?, category = ?
+            WHERE id = ?
+            ''',
+            (amount_cents, date, description, category, id)
         )
         conn.commit()
         conn.close()
+
         return redirect(url_for('index'))
+
 
     conn.close()
     return render_template('edit.html', expense=expense)
+
 @app.route('/delete/<int:id>', methods=['POST'])
 def delete_expense(id):
     conn = get_db_connection()
