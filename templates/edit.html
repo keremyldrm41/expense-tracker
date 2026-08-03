@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Expense</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 40px; background-color: #f9f9f9; }
+        .form-card { max-width: 400px; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; }
+        input, select { width: 100%; padding: 8px 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        button { background-color: #0066cc; color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; width: 100%; }
+        button:hover { background-color: #0052a3; }
+        a { display: inline-block; margin-top: 12px; color: #666; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h1>Edit Expense</h1>
+
+        <form action="{{ url_for('edit_expense', id=expense['id']) }}" method="POST">
+            <div class="form-group">
+                <label for="amount">Amount (€):</label>
+                <input type="number" id="amount" name="amount" step="0.01" required
+                       value="{{ '%.2f'|format(expense['amount_cents'] / 100) }}">
+            </div>
+
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" required
+                       value="{{ expense['date'] }}">
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description" required
+                       value="{{ expense['description'] }}">
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    {% for cat in ['Food', 'Transport', 'Sports', 'Entertainment', 'Other'] %}
+                    {% if expense['category'] == cat %}
+                        <option value="{{ cat }}" selected>{{ cat }}</option>
+                        {% else %}
+                        <option value="{{ cat }}">{{ cat }}</option>
+                    {% endif %} {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit">Save Changes</button>
+        </form>
+
+        <a href="{{ url_for('index') }}">← Back to Expenses</a>
+    </div>
+
+</body>
+</html>
