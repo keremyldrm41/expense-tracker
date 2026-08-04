@@ -1,10 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Summary</title>
+    <style>
+        body { font-family: system-ui, sans-serif; margin: 40px; background-color: #f9f9f9; color: #333; }
+        .nav-link { display: inline-block; margin-bottom: 20px; color: #0066cc; text-decoration: none; font-weight: 500; }
+        .nav-link:hover { text-decoration: underline; }
+
+        /* Year Pill Navigation */
+        .year-selector { display: flex; gap: 10px; margin-bottom: 24px; }
+        .year-btn {
+            padding: 8px 16px; background: white; border: 1px solid #ccc;
+            border-radius: 20px; text-decoration: none; color: #333; font-weight: 500;
+        }
+        .year-btn.active { background: #0066cc; color: white; border-color: #0066cc; }
+
+        /* Month Square Grid */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; margin-bottom: 32px; }
+        .month-card {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: white; border-radius: 8px; padding: 16px; text-decoration: none;
+            color: inherit; border: 2px solid transparent; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.1s ease, border-color 0.1s ease;
+        }
+        .month-card:hover { transform: translateY(-2px); border-color: #0066cc; }
+        .month-card.active { border-color: #0066cc; background-color: #f0f7ff; }
+        .month-title { font-size: 14px; font-weight: 600; color: #666; margin-bottom: 8px; text-transform: uppercase; }
+        .month-amount { font-size: 18px; font-weight: bold; color: #111; }
+
+        /* Category Breakdown Table */
+        .category-box { background: white; border-radius: 8px; padding: 16px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .cat-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #eee; }
+        .cat-row:last-child { border-bottom: none; }
+
+        /* Expense Table (Mini Main Page) */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f4f4f6; color: #555; }
+        .empty-msg { color: #888; font-style: italic; }
+    </style>
 </head>
 <body>
-$END$
+
+    <a href="{{ url_for('index') }}" class="nav-link">← Back to Expenses</a>
+    <h1>Monthly Summary</h1>
+
+    <!-- Year List -->
+    {% if years %}
+        <div class="year-selector">
+            {% for y in years %}
+                <a href="{{ url_for('summary', year=y) }}" class="year-btn {% if y == selected_year %}active{% endif %}">
+                    {{ y }}
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-msg">No expense history available.</p>
+    {% endif %}
+
+    <!-- Month Squares -->
+    {% if months_data %}
+        <div class="grid-container">
+            {% for m in months_data %}
+                <a href="{{ url_for('summary', year=selected_year, month=m.num) }}"
+                   class="month-card {% if m.num == selected_month %}active{% endif %}">
+                    <span class="month-title">{{ m.name }}</span>
+                    <span class="month-amount">{{ m.total_cents|euros }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    {% elif selected_year %}
+        <p class="empty-msg">No expenses found for {{ selected_year }}.</p>
+    {% endif %}
+
+    <!-- Detailed View for Selected Month -->
+    {% if selected_month %}
+        <h2>{{ selected_month_name }} {{ selected_year }} Breakdown</h2>
+
+        <!-- Per Category Breakdown -->
+        <div class="category-box">
+            <h3>Category Breakdown</h3>
+            {% for cat in category_totals %}
+                <div class="cat-row">
+                    <span><strong>{{ cat['category'] }}</strong></span>
+                    <span>{{ cat['total_cents']|euros }}</span>
+                </div>
+            {% endfor %}
+            <div class="cat-row" style="margin-top: 8px; font-size: 1.05em;">
+                <span><strong>Total Month Spending</strong></span>
+                <span><strong>{{ month_total_cents|euros }}</strong></span>
+            </div>
+        </div>
+
+        <!-- Mini Main Page Table -->
+        <h3>Itemized Expenses</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for expense in expenses %}
+                    <tr>
+                        <td>{{ expense['date'] }}</td>
+                        <td>{{ expense['description'] }}</td>
+                        <td>{{ expense['category'] }}</td>
+                        <td>{{ expense['amount_cents']|euros }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="empty-msg">No expenses found for this month.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
 </body>
 </html>
