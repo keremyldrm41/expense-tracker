@@ -1,11 +1,15 @@
 import sqlite3
 import calendar
+import math
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, abort
 
 app = Flask(__name__)
 
+
 CATEGORIES = ["Food", "Transport", "Sports", "Entertainment", "Other"]
+
+MAX_AMOUNT_EUROS = 1_000_000
 
 
 def get_db_connection():
@@ -15,7 +19,6 @@ def get_db_connection():
 
 
 def get_validated_form():
-
     amount_raw = request.form.get("amount", "")
     date = request.form.get("date", "")
     description = request.form.get("description", "").strip()
@@ -25,7 +28,9 @@ def get_validated_form():
         amount = float(amount_raw)
     except ValueError:
         abort(400)
-    if amount <= 0:
+    if not math.isfinite(amount):
+        abort(400)
+    if not 0 < amount <= MAX_AMOUNT_EUROS:
         abort(400)
 
     try:
