@@ -1,15 +1,45 @@
 import sqlite3
 import calendar
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, abort
 
 app = Flask(__name__)
 
 CATEGORIES = ["Food", "Transport", "Sports", "Entertainment", "Other"]
 
+
 def get_db_connection():
     conn = sqlite3.connect("expense.db")
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def get_validated_form():
+
+    amount_raw = request.form.get("amount", "")
+    date = request.form.get("date", "")
+    description = request.form.get("description", "").strip()
+    category = request.form.get("category", "")
+
+    try:
+        amount = float(amount_raw)
+    except ValueError:
+        abort(400)
+    if amount <= 0:
+        abort(400)
+
+    try:
+        datetime.strptime(date, "%Y-%m-%d")
+    except ValueError:
+        abort(400)
+
+    if not description:
+        abort(400)
+
+    if category not in CATEGORIES:
+        abort(400)
+
+    return round(amount * 100), date, description, category
 
 
 @app.route("/")
@@ -29,12 +59,7 @@ def index():
 @app.route("/add", methods=["GET", "POST"])
 def add_expense():
     if request.method == "POST":
-        amount_raw = request.form["amount"]
-        date = request.form["date"]
-        description = request.form["description"]
-        category = request.form["category"]
-
-        amount_cents = round(float(amount_raw) * 100)
+        amount_cents, date, description, category = get_validated_form()
 
         conn = get_db_connection()
         conn.execute(
@@ -57,55 +82,50 @@ def about_expense():
     return "About expense-tracker!"
 
 
-@app.route('/edit/<int:id>', methods=['GET', 'POST'])
+@app.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit_expense(id):
     conn = get_db_connection()
     expense = conn.execute(
-        'SELECT * FROM expenses WHERE id = ?', (id,)
+        "SELECT * FROM expenses WHERE id = ?", (id,)
     ).fetchone()
 
     if expense is None:
         conn.close()
         abort(404)
 
-    if request.method == 'POST':
-        amount_raw = request.form['amount']
-        date = request.form['date']
-        description = request.form['description']
-        category = request.form['category']
-
-        amount_cents = round(float(amount_raw) * 100)
+    if request.method == "POST":
+        amount_cents, date, description, category = get_validated_form()
 
         conn.execute(
-            '''
+            """
             UPDATE expenses
             SET amount_cents = ?, date = ?, description = ?, category = ?
             WHERE id = ?
-            ''',
-            (amount_cents, date, description, category, id)
+            """,
+            (amount_cents, date, description, category, id),
         )
         conn.commit()
         conn.close()
 
-        return redirect(url_for('index'))
+        return redirect(url_for("index"))
 
     conn.close()
-    return render_template('edit.html', expense=expense, categories=CATEGORIES)
+    return render_template("edit.html", expense=expense, categories=CATEGORIES)
 
 
-@app.route('/delete/<int:id>', methods=['POST'])
+@app.route("/delete/<int:id>", methods=["POST"])
 def delete_expense(id):
     conn = get_db_connection()
-    expense = conn.execute('SELECT * FROM expenses WHERE id = ?', (id,)).fetchone()
+    expense = conn.execute("SELECT * FROM expenses WHERE id = ?", (id,)).fetchone()
 
     if expense is None:
         conn.close()
         abort(404)
 
-    conn.execute('DELETE FROM expenses WHERE id = ?', (id,))
+    conn.execute("DELETE FROM expenses WHERE id = ?", (id,))
     conn.commit()
     conn.close()
-    return redirect(url_for('index'))
+    return redirect(url_for("index"))
 
 
 @app.template_filter("euros")
@@ -117,7 +137,6 @@ def cents_to_euros(cents):
 def summary():
     selected_year = request.args.get("year")
     selected_month = request.args.get("month")
-
 
     if selected_year:
         try:
@@ -132,9 +151,9 @@ def summary():
         try:
             month_num = int(selected_month)
         except ValueError:
-            abort(404)
+            abort(404)          # catches "banana"
         if not 1 <= month_num <= 12:
-            abort(404)
+            abort(404)          # catches 13, 0, -1
         selected_month = f"{month_num:02d}"
 
     conn = get_db_connection()
