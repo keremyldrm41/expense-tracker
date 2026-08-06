@@ -35,7 +35,12 @@
         .form-card input, .form-card select { width: 100%; padding: 8px 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
         .form-card button { background-color: #0066cc; color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; width: 100%; }
         .form-card button:hover { background-color: #0052a3; }
-        .back-link { display: inline-block; margin-top: 12px; color: #666; text-decoration: none; font-size: 14px; }
+        /* One definition of what a "back" link looks like, used by all three
+           pages that have one. The modifiers only say where it sits. */
+        .back-link { display: inline-block; color: #0066cc; text-decoration: none; font-weight: 500; font-size: 14px; }
+        .back-link:hover { text-decoration: underline; }
+        .back-link--top { margin-bottom: 20px; }
+        .back-link--bottom { margin-top: 12px; }
     </style>
 
     {% block extra_css %}{% endblock %}

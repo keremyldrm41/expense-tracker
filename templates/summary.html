@@ -5,9 +5,6 @@
 {% block extra_css %}
 <style>
     body { color: #333; }
-    .nav-link { display: inline-block; margin-bottom: 20px; color: #0066cc; text-decoration: none; font-weight: 500; }
-    .nav-link:hover { text-decoration: underline; }
-
     /* Year Pill Navigation */
     .year-selector { display: flex; gap: 10px; margin-bottom: 24px; }
     .year-btn {
@@ -37,7 +34,7 @@
 {% endblock %}
 
 {% block content %}
-    <a href="{{ url_for('index') }}" class="nav-link">← Back to Expenses</a>
+    <a href="{{ url_for('index') }}" class="back-link back-link--top">← Back to Expenses</a>
     <h1>Monthly Summary</h1>
 
     <!-- Year List -->
