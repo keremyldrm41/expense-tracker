@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, abort
 
 app = Flask(__name__)
 
+CATEGORIES = ["Food", "Transport", "Sports", "Entertainment", "Other"]
 
 def get_db_connection():
     conn = sqlite3.connect("expense.db")
@@ -48,12 +49,13 @@ def add_expense():
 
         return redirect(url_for("index"))
 
-    return render_template("add.html")
+    return render_template("add.html", categories=CATEGORIES)
 
 
 @app.route("/about")
 def about_expense():
     return "About expense-tracker!"
+
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_expense(id):
@@ -87,9 +89,9 @@ def edit_expense(id):
 
         return redirect(url_for('index'))
 
-
     conn.close()
-    return render_template('edit.html', expense=expense)
+    return render_template('edit.html', expense=expense, categories=CATEGORIES)
+
 
 @app.route('/delete/<int:id>', methods=['POST'])
 def delete_expense(id):
@@ -105,14 +107,35 @@ def delete_expense(id):
     conn.close()
     return redirect(url_for('index'))
 
+
 @app.template_filter("euros")
 def cents_to_euros(cents):
     return f"€{cents / 100:.2f}"
+
 
 @app.route("/summary")
 def summary():
     selected_year = request.args.get("year")
     selected_month = request.args.get("month")
+
+
+    if selected_year:
+        try:
+            year_num = int(selected_year)
+        except ValueError:
+            abort(404)
+        if not 1900 <= year_num <= 2999:
+            abort(404)
+        selected_year = str(year_num)
+
+    if selected_month:
+        try:
+            month_num = int(selected_month)
+        except ValueError:
+            abort(404)
+        if not 1 <= month_num <= 12:
+            abort(404)
+        selected_month = f"{month_num:02d}"
 
     conn = get_db_connection()
 
@@ -197,6 +220,7 @@ def summary():
         category_totals=category_totals,
         month_total_cents=month_total_cents,
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
