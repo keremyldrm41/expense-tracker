@@ -10,7 +10,7 @@ __pycache__/
 
 # IDEs
 .vscode/
-.idea/e
+.idea/
 
 expense.db
-.idea/
+scratch.py
