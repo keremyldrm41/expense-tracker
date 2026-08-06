@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Expense Tracker{% endblock %}</title>
+    <style>
+        /* ===== Shared page shell ===== */
+        body { font-family: system-ui, sans-serif; margin: 40px; background-color: #f9f9f9; }
+
+        /* ===== Shared tables (index + summary) ===== */
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f4f4f6; color: #555; }
+        .empty-msg { color: #888; font-style: italic; }
+
+        /* ===== Shared navigation buttons ===== */
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .btn-primary { background: #0066cc; color: white; }
+        .btn-primary:hover { background: #0052a3; }
+        .btn-secondary { background: #4a5568; color: white; margin-right: 8px; }
+        .btn-secondary:hover { background: #364152; }
+
+        /* ===== Shared forms (add + edit) ===== */
+        .form-card { max-width: 400px; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 16px; }
+        .form-card label { display: block; margin-bottom: 6px; font-weight: 500; color: #333; }
+        .form-card input, .form-card select { width: 100%; padding: 8px 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .form-card button { background-color: #0066cc; color: white; border: none; padding: 10px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; width: 100%; }
+        .form-card button:hover { background-color: #0052a3; }
+        .back-link { display: inline-block; margin-top: 12px; color: #666; text-decoration: none; font-size: 14px; }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% block content %}{% endblock %}
+
+</body>
+</html>
