@@ -1,3 +1,6 @@
+# Secrets - never commit these
+.env
+
 # Environments
 .venv/
 env/
