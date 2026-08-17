@@ -2,6 +2,18 @@
 
 {% block title %}Add Expense{% endblock %}
 
+{% block extra_css %}
+<style>
+    .ai-hint { margin-top: -8px; margin-bottom: 16px; font-size: 13px; color: #666; min-height: 24px; }
+    .suggest-btn {
+        background: #eef4ff; color: #0066cc; border: 1px solid #cfe0ff;
+        border-radius: 4px; padding: 4px 10px; font-size: 13px; cursor: pointer;
+        width: auto; font-family: inherit;
+    }
+    .suggest-btn:hover { background: #dfeaff; }
+</style>
+{% endblock %}
+
 {% block content %}
     <div class="form-card">
         <h1>Add New Expense</h1>
@@ -26,7 +38,7 @@
                 <input type="text" id="description" name="description" required placeholder="e.g. Morning Coffee">
             </div>
 
-            <!-- 4. Category Dropdown - options come from CATEGORIES in app.py -->
+            <!-- 4. Category Dropdown - options come from CATEGORIES in ai.py -->
             <div class="form-group">
                 <label for="category">Category:</label>
                 <select id="category" name="category" required>
@@ -36,9 +48,58 @@
                 </select>
             </div>
 
+            <!-- The AI suggestion lands here. Empty unless we have something. -->
+            <div id="ai-hint" class="ai-hint"></div>
+
             <button type="submit">Save Expense</button>
         </form>
 
         <a href="{{ url_for('index') }}" class="back-link back-link--bottom">← Back to Expenses</a>
     </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const descInput = document.getElementById("description");
+    const categorySelect = document.getElementById("category");
+    const hint = document.getElementById("ai-hint");
+
+    let lastQueried = "";
+
+    descInput.addEventListener("blur", async () => {
+        const text = descInput.value.trim();
+        if (!text || text === lastQueried) return;
+        lastQueried = text;
+
+        hint.textContent = "Thinking…";
+
+        try {
+            const res = await fetch("/api/suggest-category", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ description: text })
+            });
+            const data = await res.json();
+
+            if (!data.category) {
+                hint.textContent = "";
+                return;
+            }
+
+            hint.textContent = "";
+            const btn = document.createElement("button");
+            btn.type = "button";   // without this, clicking would submit the form
+            btn.className = "suggest-btn";
+            btn.textContent = "Suggested: " + data.category + " — use it";
+            btn.addEventListener("click", () => {
+                categorySelect.value = data.category;
+                hint.textContent = "Category set to " + data.category;
+            });
+            hint.appendChild(btn);
+        } catch (e) {
+            // Network died, server down, malformed JSON: fail quiet.
+            hint.textContent = "";
+        }
+    });
+</script>
 {% endblock %}
