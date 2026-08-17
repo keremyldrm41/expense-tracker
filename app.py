@@ -2,14 +2,16 @@ import sqlite3
 import calendar
 import math
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, abort
+from flask import Flask, render_template, request, redirect, url_for, abort, jsonify
+
+from ai import CATEGORIES, suggest_category
 
 app = Flask(__name__)
 
 
-CATEGORIES = ["Food", "Transport", "Sports", "Entertainment", "Other"]
-
 MAX_AMOUNT_EUROS = 1_000_000
+
+MAX_DESCRIPTION_CHARS = 200
 
 
 def get_db_connection():
@@ -80,6 +82,18 @@ def add_expense():
         return redirect(url_for("index"))
 
     return render_template("add.html", categories=CATEGORIES)
+
+
+@app.route("/api/suggest-category", methods=["POST"])
+def suggest_category_api():
+    data = request.get_json(silent=True) or {}
+    description = data.get("description", "")
+
+    if not isinstance(description, str):
+        return jsonify({"category": None})
+
+    suggestion = suggest_category(description[:MAX_DESCRIPTION_CHARS])
+    return jsonify({"category": suggestion})
 
 
 @app.route("/about")
