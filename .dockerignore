@@ -1,0 +1,27 @@
+# Secrets: the API key must never be baked into an image layer
+.env
+
+# Local environment: the Windows venv is useless (and huge) inside a Linux container
+.venv/
+env/
+venv/
+venv_*/
+
+# Python bytecode caches
+__pycache__/
+*.pyc
+
+# Local data: the database lives in a volume, not in the image
+expense.db
+
+# Version control and editor/tool folders
+.git/
+.gitignore
+.idea/
+.vscode/
+.claude/
+
+# Dev scratch files and build files the app doesn't need at run time
+scratch.py
+Dockerfile
+.dockerignore
