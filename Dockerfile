@@ -14,4 +14,8 @@ COPY . .
 # Documentation only: Flask listens on 5000. Publishing happens with -p at run time
 EXPOSE 5000
 
+# Inside a container 127.0.0.1 is the container's own loopback; 0.0.0.0 = all interfaces,
+# which is what Docker's port mapping connects to
+ENV FLASK_HOST=0.0.0.0
+
 CMD ["python", "app.py"]

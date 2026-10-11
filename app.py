@@ -1,3 +1,4 @@
+import os
 import sqlite3
 import calendar
 import math
@@ -261,4 +262,10 @@ def summary():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Safe defaults for a laptop: loopback only, debug off.
+    # The Dockerfile sets FLASK_HOST=0.0.0.0 so the port mapping can reach the app;
+    # debug is opt-in (FLASK_DEBUG=1) because the debugger lets anyone who can
+    # reach the port run code on the server.
+    host = os.environ.get("FLASK_HOST", "127.0.0.1")
+    debug = os.environ.get("FLASK_DEBUG") == "1"
+    app.run(host=host, debug=debug)
