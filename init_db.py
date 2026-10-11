@@ -1,9 +1,10 @@
+import os
 import sqlite3
 import sys
 
 
 def init_db():
-    conn = sqlite3.connect('expense.db')
+    conn = sqlite3.connect(os.environ.get("DB_PATH", "expense.db"))
     cursor = conn.cursor()
 
     # 1. Create the table safely (Uses INTEGER for cents to avoid floating-point bugs)

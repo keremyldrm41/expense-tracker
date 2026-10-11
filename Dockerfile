@@ -18,4 +18,10 @@ EXPOSE 5000
 # which is what Docker's port mapping connects to
 ENV FLASK_HOST=0.0.0.0
 
-CMD ["python", "app.py"]
+# The database lives in /data, a folder meant to be mounted as a volume (docker run -v)
+ENV DB_PATH=/data/expense.db
+RUN mkdir /data
+
+# init_db.py is idempotent (CREATE TABLE IF NOT EXISTS), so a fresh empty volume gets its
+# table on first start. exec makes Python PID 1 so docker stop reaches it directly.
+CMD ["sh", "-c", "python init_db.py && exec python app.py"]

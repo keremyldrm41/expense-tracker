@@ -9,6 +9,8 @@ from ai import CATEGORIES, suggest_category
 
 app = Flask(__name__)
 
+# The Dockerfile points this at a mounted volume so the data outlives the container
+DB_PATH = os.environ.get("DB_PATH", "expense.db")
 
 MAX_AMOUNT_EUROS = 1_000_000
 
@@ -16,7 +18,7 @@ MAX_DESCRIPTION_CHARS = 200
 
 
 def get_db_connection():
-    conn = sqlite3.connect("expense.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
