@@ -1,5 +1,7 @@
 # Secrets: the API key must never be baked into an image layer
 .env
+# Template for humans; the app doesn't read it at run time
+.env.example
 
 # Local environment: the Windows venv is useless (and huge) inside a Linux container
 .venv/
