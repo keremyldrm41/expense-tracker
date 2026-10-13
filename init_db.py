@@ -7,7 +7,7 @@ def init_db():
     conn = sqlite3.connect(os.environ.get("DB_PATH", "expense.db"))
     cursor = conn.cursor()
 
-    # 1. Create the table safely (Uses INTEGER for cents to avoid floating-point bugs)
+    # Safe to run repeatedly. Amounts are INTEGER cents to avoid floating-point errors.
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS expenses (
         id INTEGER PRIMARY KEY,
@@ -18,11 +18,10 @@ def init_db():
     );
     """)
 
-    # Check if user added the '--seed' flag in the terminal
+    # Seeding is destructive, so it only happens when asked for: python init_db.py --seed
     if "--seed" in sys.argv:
-        print("⚠️ Seeding flag detected. Wiping existing rows and injecting fake data...")
+        print("Seeding flag detected. Wiping existing rows and injecting fake data...")
 
-        # Destructive actions are now locked behind the flag safely!
         cursor.execute("DELETE FROM expenses;")
 
         # Amounts are stored as exact integer counts of cents (€14.50 -> 1450)
@@ -38,11 +37,10 @@ def init_db():
         """, fake_expenses)
 
         conn.commit()
-        print("✅ Database successfully seeded.")
+        print("Database successfully seeded.")
     else:
-        print("🛡️ Table verified or created successfully. No data was altered.")
+        print("Table verified or created successfully. No data was altered.")
 
-    # Show database status securely
     print("\n--- Current Database Contents ---")
     cursor.execute("SELECT id, amount_cents, date, description, category FROM expenses;")
     rows = cursor.fetchall()
