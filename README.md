@@ -32,24 +32,40 @@ I built it step by step as a learning project: Flask and SQLite first, then vali
 
 You need Python 3.12 (or close to it) and Git. The AI key is optional: without it, everything works except the suggestion button.
 
+**1. Get the code**
+
 ```bash
-# 1. Get the code
 git clone https://github.com/keremyldrm41/expense-tracker.git
 cd expense-tracker
+```
 
-# 2. Make a virtual environment and install the libraries
+**2. Make a virtual environment and install the libraries**
+
+Windows (PowerShell):
+
+```powershell
 python -m venv .venv
-.venv\Scripts\Activate.ps1        # Windows PowerShell
-# source .venv/bin/activate       # macOS / Linux
-
+.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+```
 
-# 3. Add your API key (optional)
-copy .env.example .env            # Windows
-# cp .env.example .env            # macOS / Linux
-# Then open .env and replace your-key-here with your Anthropic API key.
+If PowerShell says "running scripts is disabled on this system", allow scripts for your own user once (`Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`), then run the `Activate.ps1` line again.
 
-# 4. Create the database, then start the app
+macOS / Linux (use `python3` if `python` is not found):
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+**3. Add your API key (optional)**
+
+Copy the example file (`copy .env.example .env` on Windows, `cp .env.example .env` on macOS / Linux), then open `.env` and replace `your-key-here` with your Anthropic API key. If you skip this, the app still works, it just never offers a suggestion.
+
+**4. Create the database, then start the app**
+
+```bash
 python init_db.py
 python app.py
 ```
@@ -62,7 +78,7 @@ Set `FLASK_DEBUG=1` before `python app.py` if you want Flask's debug mode while 
 
 ## Run it with Docker
 
-You need Docker Desktop. Copy `.env.example` to `.env` and put your Anthropic API key in it, as above.
+You need Docker Desktop, and it has to be **running** (open it and wait until it says Docker is running), otherwise the commands below fail with an error about not being able to connect to the Docker daemon. Copy `.env.example` to `.env` and put your Anthropic API key in it, as in step 3 above.
 
 ```bash
 # Build the image (once, and again after code changes)
