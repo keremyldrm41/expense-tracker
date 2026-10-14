@@ -99,11 +99,6 @@ def suggest_category_api():
     return jsonify({"category": suggestion})
 
 
-@app.route("/about")
-def about_expense():
-    return "About expense-tracker!"
-
-
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit_expense(id):
     conn = get_db_connection()
